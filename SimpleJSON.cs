@@ -1,6 +1,11 @@
 /* * * * *
  * A simple JSON Parser / builder
  * ------------------------------
+ *
+ * Additions made by Alan Lawrey
+ * - Added some helper constructors to JSONArray and JSONObject for initialising them.
+ *
+ * ------------------------------
  * 
  * It mainly has been written as a simple JSON parser. It can build a JSON string
  * from the node-tree, or generate a node tree from any valid JSON string.
@@ -199,7 +204,7 @@ namespace SimpleJSON
             public KeyEnumerator(List<JSONNode>.Enumerator aArrayEnum) : this(new Enumerator(aArrayEnum)) { }
             public KeyEnumerator(Dictionary<string, JSONNode>.Enumerator aDictEnum) : this(new Enumerator(aDictEnum)) { }
             public KeyEnumerator(Enumerator aEnumerator) { m_Enumerator = aEnumerator; }
-            public string Current { get { return m_Enumerator.Current.Key; } }
+            public JSONNode Current { get { return m_Enumerator.Current.Key; } }
             public bool MoveNext() { return m_Enumerator.MoveNext(); }
             public KeyEnumerator GetEnumerator() { return this; }
         }
@@ -785,6 +790,23 @@ namespace SimpleJSON
             get { return m_List.Count; }
         }
 
+        public JSONArray() : base()
+        {
+
+        }
+
+        public JSONArray(IEnumerable<JSONNode> input) : base()
+        {
+            foreach (var item in input)
+                Add(item);
+        }
+        
+        public JSONArray(IEnumerable<string> input) : base()
+        {
+            foreach (var item in input)
+                Add(item);
+        }
+
         public override void Add(string aKey, JSONNode aItem)
         {
             if (aItem == null)
@@ -900,6 +922,23 @@ namespace SimpleJSON
         public override int Count
         {
             get { return m_Dict.Count; }
+        }
+
+        public JSONObject() { }
+        public JSONObject(IEnumerable<KeyValuePair<string, JSONNode>> initialValues)
+        {
+            foreach (var value in initialValues)
+                m_Dict.Add(value.Key, value.Value);
+        }
+        public JSONObject(IEnumerable<KeyValuePair<string, JSONArray>> initialValues)
+        {
+            foreach (var value in initialValues)
+                m_Dict.Add(value.Key, value.Value);
+        }
+        public JSONObject(IEnumerable<KeyValuePair<string, JSONObject>> initialValues)
+        {
+            foreach (var value in initialValues)
+                m_Dict.Add(value.Key, value.Value);
         }
 
         public override void Add(string aKey, JSONNode aItem)
